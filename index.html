@@ -1,0 +1,184 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0F172A">
+  <title>Investment Saarthi — Your investing learning companion</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: { navy: '#0F172A', emerald: '#10B981', canvas: '#F8FAFC' },
+      boxShadow: { soft: '0 12px 35px rgba(15,23,42,.07)' }
+    }}};
+  </script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root { color-scheme: light; }
+    body { font-family: 'DM Sans', sans-serif; background:#F8FAFC; color:#0F172A; }
+    h1,h2,h3,.brand { font-family:'Manrope',sans-serif; }
+    .glass { background:rgba(255,255,255,.88); backdrop-filter:blur(14px); }
+    .chat-scroll { scrollbar-width:thin; scrollbar-color:#cbd5e1 transparent; }
+    .range { accent-color:#10B981; }
+    .message { max-width:min(88%,680px); }
+    .fade-in { animation:fade .24s ease-out; }
+    @keyframes fade { from {opacity:0;transform:translateY(7px)} to {opacity:1;transform:translateY(0)} }
+    .tab-active { background:#0F172A;color:white;box-shadow:0 4px 12px #0f172a22; }
+    .focus-ring:focus { outline:3px solid #10B98155; outline-offset:2px; }
+  </style>
+</head>
+<body class="min-h-screen">
+  <header class="sticky top-0 z-40 border-b border-slate-200/80 glass">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+      <a href="#" class="flex items-center gap-3 min-w-0" aria-label="Investment Saarthi home">
+        <div class="w-10 h-10 rounded-2xl bg-navy text-emerald flex items-center justify-center shadow-soft"><i data-lucide="sprout" class="w-6 h-6"></i></div>
+        <div class="min-w-0"><div class="brand font-extrabold tracking-tight text-lg leading-tight">Investment <span class="text-emerald-600">Saarthi</span></div><div class="text-[11px] text-slate-500">Learn first. Decide with confidence.</div></div>
+      </a>
+      <div class="flex items-center gap-2">
+        <span class="hidden md:inline-flex items-center gap-1.5 text-xs text-slate-500"><span class="w-2 h-2 rounded-full bg-emerald-500"></span> Educational companion</span>
+        <button id="inspectorToggle" class="focus-ring text-xs sm:text-sm font-semibold border border-slate-200 rounded-xl px-3 py-2 hover:bg-slate-50 flex items-center gap-2"><i data-lucide="shield-check" class="w-4 h-4"></i><span class="hidden sm:inline">PM Guardrails & Eval Mode</span><span class="sm:hidden">Eval Mode</span></button>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto px-4 sm:px-6 py-7">
+    <section class="rounded-3xl bg-navy text-white p-6 sm:p-9 relative overflow-hidden shadow-soft mb-7">
+      <div class="absolute -right-10 -top-24 w-72 h-72 rounded-full border-[38px] border-white/5"></div>
+      <div class="absolute right-24 -bottom-32 w-64 h-64 rounded-full bg-emerald-400/10 blur-2xl"></div>
+      <div class="relative max-w-3xl">
+        <div class="inline-flex items-center gap-2 text-emerald-300 text-xs font-bold tracking-[.16em] uppercase mb-3"><i data-lucide="sparkles" class="w-4 h-4"></i> Your first step towards financial confidence</div>
+        <h1 class="text-3xl sm:text-4xl font-extrabold leading-tight mb-3">Investing feels simpler<br class="hidden sm:block"> when you have a <span class="text-emerald-300">Saarthi.</span></h1>
+        <p class="text-slate-300 max-w-2xl leading-relaxed">Understand the basics, connect your goals to a plan, and explore the trade-offs — without stock tips or promises of returns.</p>
+        <div class="flex flex-wrap gap-2 mt-5 text-xs">
+          <span class="rounded-full bg-white/10 px-3 py-1.5">Plain-language learning</span><span class="rounded-full bg-white/10 px-3 py-1.5">Transparent assumptions</span><span class="rounded-full bg-white/10 px-3 py-1.5">You stay in control</span>
+        </div>
+      </div>
+    </section>
+
+    <nav class="flex gap-2 overflow-x-auto pb-2 mb-5" aria-label="Main modules">
+      <button class="tab-btn tab-active focus-ring whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold" data-tab="profile"><i data-lucide="messages-square" class="w-4 h-4 inline mr-1.5"></i>Saarthi Chat</button>
+      <button class="tab-btn focus-ring whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-white" data-tab="learn"><i data-lucide="book-open" class="w-4 h-4 inline mr-1.5"></i>Jargon Buster</button>
+      <button class="tab-btn focus-ring whitespace-nowrap rounded-xl px-4 py-2.5 text-sm font-semibold text-slate-600 hover:bg-white" data-tab="simulator"><i data-lucide="calculator" class="w-4 h-4 inline mr-1.5"></i>Goal Simulator</button>
+    </nav>
+
+    <section id="panel-profile" class="tab-panel grid lg:grid-cols-[1.35fr_.8fr] gap-5">
+      <div class="bg-white border border-slate-200 rounded-3xl shadow-soft overflow-hidden">
+        <div class="p-5 sm:p-6 border-b border-slate-100 flex items-center justify-between">
+          <div><div class="font-bold text-lg">Let's get to know you</div><p class="text-sm text-slate-500 mt-1">A short conversation. Skip anything you don't want to share.</p></div>
+          <span class="text-xs rounded-full bg-emerald-50 text-emerald-700 px-3 py-1.5 font-semibold">01 / Discover</span>
+        </div>
+        <div id="consentScreen" class="p-6 sm:p-8">
+          <div class="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-700 flex items-center justify-center mb-4"><i data-lucide="lock-keyhole" class="w-6 h-6"></i></div>
+          <h2 class="text-xl font-bold mb-2">Your information, your choice</h2>
+          <p class="text-sm text-slate-600 leading-relaxed mb-5">Before profiling, please confirm that you understand this prototype uses your answers to calculate an educational risk profile. Your profile stays in this browser session unless you export it. Do not enter account numbers, passwords or other sensitive details.</p>
+          <label class="flex gap-3 items-start text-sm text-slate-700 mb-5"><input id="consentCheck" type="checkbox" class="mt-1 accent-emerald-600"><span>I consent to use the information I provide for this educational profile and understand that this is not personalised regulated investment advice.</span></label>
+          <button id="startProfile" class="focus-ring rounded-xl bg-navy text-white font-semibold px-5 py-3 disabled:opacity-40" disabled>Start my profile <i data-lucide="arrow-right" class="w-4 h-4 inline ml-2"></i></button>
+        </div>
+        <div id="chatScreen" class="hidden">
+          <div id="chatMessages" class="chat-scroll h-[360px] sm:h-[420px] overflow-y-auto p-5 sm:p-6 space-y-4" aria-live="polite"></div>
+          <div class="border-t border-slate-100 p-4 sm:p-5">
+            <div id="answerChoices" class="flex flex-wrap gap-2 mb-3"></div>
+            <form id="profileForm" class="flex gap-2">
+              <input id="profileInput" class="focus-ring min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm" placeholder="Type your answer…" autocomplete="off">
+              <button class="focus-ring bg-navy text-white rounded-xl px-4 font-semibold text-sm">Send</button>
+              <button type="button" id="skipQuestion" class="focus-ring border border-slate-200 rounded-xl px-3 text-sm text-slate-600">Skip</button>
+            </form>
+            <div class="text-[11px] text-slate-400 mt-2">One question at a time · You can skip any question</div>
+          </div>
+        </div>
+        <div id="profileResult" class="hidden p-5 sm:p-6"></div>
+      </div>
+      <aside class="space-y-5">
+        <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-soft">
+          <div class="flex items-center justify-between mb-3"><h3 class="font-bold">Your journey</h3><i data-lucide="route" class="w-5 h-5 text-emerald-600"></i></div>
+          <div class="space-y-4">
+            <div class="flex gap-3"><div class="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center text-sm font-bold">1</div><div><div class="font-semibold text-sm">Discover</div><div class="text-xs text-slate-500">Understand goals and comfort with risk.</div></div></div>
+            <div class="flex gap-3"><div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-sm font-bold">2</div><div><div class="font-semibold text-sm">Decide</div><div class="text-xs text-slate-500">Learn categories and compare trade-offs.</div></div></div>
+            <div class="flex gap-3"><div class="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 flex items-center justify-center text-sm font-bold">3</div><div><div class="font-semibold text-sm">Grow</div><div class="text-xs text-slate-500">Revisit goals as life changes.</div></div></div>
+          </div>
+        </div>
+        <div class="rounded-3xl bg-emerald-50 border border-emerald-100 p-5">
+          <div class="flex gap-2 items-center text-emerald-800 font-bold text-sm mb-2"><i data-lucide="shield-check" class="w-4 h-4"></i> Trust by design</div>
+          <p class="text-xs text-emerald-900/80 leading-relaxed">The risk category is calculated using transparent rules — not decided by the AI model. AI may help explain the result, but it cannot override the rules.</p>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-3xl p-5">
+          <h3 class="font-bold text-sm mb-2">A quick reminder</h3><p class="text-xs text-slate-500 leading-relaxed">Risk capacity and risk tolerance are different. A longer horizon does not automatically mean you should take more risk. Keep emergency savings and near-term needs in view.</p>
+        </div>
+      </aside>
+    </section>
+
+    <section id="panel-learn" class="tab-panel hidden grid lg:grid-cols-[.9fr_1.1fr] gap-5">
+      <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-soft">
+        <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">02 / Decide</span><h2 class="text-2xl font-extrabold mt-2 mb-2">Jargon, meet plain English.</h2>
+        <p class="text-sm text-slate-500 mb-5">Ask a beginner question. Saarthi explains the concept, trade-offs and risks, and points to a learning reference.</p>
+        <div class="space-y-2" id="quickPrompts">
+          <button class="prompt-chip w-full text-left rounded-xl border border-slate-200 p-3 text-sm hover:border-emerald-400 hover:bg-emerald-50">What is an expense ratio?</button>
+          <button class="prompt-chip w-full text-left rounded-xl border border-slate-200 p-3 text-sm hover:border-emerald-400 hover:bg-emerald-50">Explain SIP like I'm 15.</button>
+          <button class="prompt-chip w-full text-left rounded-xl border border-slate-200 p-3 text-sm hover:border-emerald-400 hover:bg-emerald-50">SIP vs lumpsum — what's the difference?</button>
+          <button class="prompt-chip w-full text-left rounded-xl border border-amber-200 bg-amber-50 p-3 text-sm hover:border-amber-400">Which stock will double next month?</button>
+        </div>
+        <div class="mt-5 rounded-2xl bg-slate-50 p-4 text-xs text-slate-500 leading-relaxed"><i data-lucide="info" class="w-4 h-4 inline mr-1"></i> Prototype knowledge references are illustrative, not a live verified RAG repository. Source dates, approvals and content ownership must be established before launch.</div>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-3xl shadow-soft flex flex-col min-h-[540px]">
+        <div class="p-5 border-b border-slate-100"><div class="font-bold">Ask Saarthi</div><div class="text-xs text-slate-500 mt-1">Educational answers · no stock calls</div></div>
+        <div id="learnMessages" class="chat-scroll flex-1 overflow-y-auto p-5 space-y-4" aria-live="polite">
+          <div class="message rounded-2xl rounded-tl-sm bg-slate-100 p-4 text-sm leading-relaxed">Namaste! I'm here to make investing concepts easier to understand. Ask me about mutual funds, risk, fees, diversification or goal planning.</div>
+        </div>
+        <form id="learnForm" class="border-t border-slate-100 p-4 flex gap-2">
+          <input id="learnInput" class="focus-ring min-w-0 flex-1 rounded-xl border border-slate-200 px-4 py-3 text-sm" placeholder="e.g. What is an index fund?" autocomplete="off">
+          <button class="focus-ring rounded-xl bg-navy text-white px-4 font-semibold"><i data-lucide="send" class="w-4 h-4"></i></button>
+        </form>
+      </div>
+    </section>
+
+    <section id="panel-simulator" class="tab-panel hidden">
+      <div class="grid lg:grid-cols-[.9fr_1.1fr] gap-5">
+        <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-soft">
+          <span class="text-xs font-bold text-emerald-700 uppercase tracking-wider">03 / Grow</span><h2 class="text-2xl font-extrabold mt-2">Play out a goal.</h2><p class="text-sm text-slate-500 mt-2 mb-6">Change the assumptions and see how contributions and compounding interact.</p>
+          <div class="mb-6"><div class="flex justify-between items-center mb-2"><label for="sipAmount" class="text-sm font-semibold">Monthly SIP</label><strong id="sipAmountLabel" class="text-emerald-700">₹10,000</strong></div><input id="sipAmount" class="range w-full" type="range" min="1000" max="100000" step="1000" value="10000"><div class="flex justify-between text-[11px] text-slate-400"><span>₹1,000</span><span>₹1,00,000</span></div></div>
+          <div class="mb-6"><div class="flex justify-between items-center mb-2"><label for="years" class="text-sm font-semibold">Time horizon</label><strong id="yearsLabel" class="text-emerald-700">10 years</strong></div><input id="years" class="range w-full" type="range" min="1" max="30" step="1" value="10"><div class="flex justify-between text-[11px] text-slate-400"><span>1 year</span><span>30 years</span></div></div>
+          <div class="mb-6"><label for="returnProfile" class="text-sm font-semibold block mb-2">Illustrative annual return assumption</label><select id="returnProfile" class="focus-ring w-full rounded-xl border border-slate-200 p-3 text-sm"><option value="7">Conservative illustration — 7%</option><option value="10" selected>Moderate illustration — 10%</option><option value="12">Equity growth illustration — 12%</option></select><p class="text-[11px] text-slate-400 mt-2">These are hypothetical assumptions, not forecasts or expected/assured returns.</p></div>
+          <div class="border-t border-slate-100 pt-5"><label class="text-sm font-semibold block mb-2">Optional goal details</label><input id="goalName" class="focus-ring w-full rounded-xl border border-slate-200 p-3 text-sm mb-2" placeholder="Goal name (e.g. Higher studies)"><input id="goalTarget" type="number" min="0" class="focus-ring w-full rounded-xl border border-slate-200 p-3 text-sm" placeholder="Target amount in ₹ (optional)"></div>
+          <button id="analyzePlan" class="focus-ring w-full rounded-xl bg-navy text-white font-semibold py-3 mt-5"><i data-lucide="sparkles" class="w-4 h-4 inline mr-2"></i>Ask Saarthi AI to analyse my plan</button>
+        </div>
+        <div class="space-y-5">
+          <div class="bg-white border border-slate-200 rounded-3xl p-5 sm:p-6 shadow-soft">
+            <div class="flex items-center justify-between mb-4"><h3 class="font-bold">Your illustrative outcome</h3><span class="text-[11px] rounded-full bg-amber-50 text-amber-800 px-2.5 py-1">Not a recommendation</span></div>
+            <div class="grid grid-cols-2 gap-3 mb-5">
+              <div class="rounded-2xl bg-slate-50 p-4"><div class="text-xs text-slate-500">Total invested</div><div id="investedValue" class="text-xl sm:text-2xl font-extrabold mt-1">₹12.0L</div></div>
+              <div class="rounded-2xl bg-emerald-50 p-4"><div class="text-xs text-emerald-700">Estimated value</div><div id="futureValue" class="text-xl sm:text-2xl font-extrabold text-emerald-800 mt-1">₹20.7L</div></div>
+            </div>
+            <div class="h-[260px]"><canvas id="sipChart" aria-label="Invested capital and estimated wealth chart"></canvas></div>
+            <div id="goalShortfall" class="hidden mt-4 rounded-xl bg-amber-50 border border-amber-100 p-3 text-sm text-amber-900"></div>
+          </div>
+          <div id="analysisCard" class="hidden bg-white border border-slate-200 rounded-3xl p-5 shadow-soft"></div>
+          <div class="rounded-3xl bg-slate-100 p-5 text-xs text-slate-500 leading-relaxed">Calculation uses a monthly contribution model with monthly compounding and contributions assumed at month-end. It excludes taxes, fees, inflation, exit loads and changes in contribution. Actual outcomes can be lower, including loss of capital.</div>
+        </div>
+      </div>
+    </section>
+
+    <footer class="text-center text-xs text-slate-400 py-8">Investment Saarthi is an educational prototype. It does not provide investment, tax or legal advice.</footer>
+  </main>
+
+  <div id="inspectorBackdrop" class="hidden fixed inset-0 z-50 bg-navy/30"></div>
+  <aside id="inspector" class="fixed z-[60] right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl translate-x-full transition-transform duration-300 p-6 overflow-y-auto" aria-label="PM guardrails inspector">
+    <div class="flex items-center justify-between mb-7"><div><div class="text-xs uppercase tracking-widest text-emerald-700 font-bold">AI PM observability</div><h2 class="text-xl font-extrabold mt-1">Guardrails & Eval Mode</h2></div><button id="closeInspector" class="focus-ring rounded-xl p-2 hover:bg-slate-100" aria-label="Close inspector"><i data-lucide="x"></i></button></div>
+    <div class="rounded-2xl bg-navy text-white p-4 mb-5"><div class="text-xs text-slate-300">Active model</div><div class="text-lg font-bold mt-1">gemini-2.5-flash</div><div class="text-xs text-slate-300 mt-1">Server-side proxy · API key not exposed to browser</div></div>
+    <h3 class="font-bold text-sm mb-3">Control status</h3>
+    <div class="space-y-3 mb-6">
+      <div class="flex items-center justify-between text-sm"><span>Scope & advice filter</span><span class="text-emerald-700 font-semibold"><i data-lucide="check-circle" class="w-4 h-4 inline"></i> Active</span></div>
+      <div class="flex items-center justify-between text-sm"><span>Deterministic math engine</span><span class="text-emerald-700 font-semibold"><i data-lucide="check-circle" class="w-4 h-4 inline"></i> Verified locally</span></div>
+      <div class="flex items-center justify-between text-sm"><span>Profile risk decision</span><span class="text-emerald-700 font-semibold">Rules only</span></div>
+      <div class="flex items-center justify-between text-sm"><span>AI scope restriction</span><span class="text-emerald-700 font-semibold">Active prompt</span></div>
+    </div>
+    <div class="border-t border-slate-100 pt-5"><h3 class="font-bold text-sm mb-3">Last request telemetry</h3><div class="grid grid-cols-2 gap-3"><div class="rounded-xl bg-slate-50 p-3"><div class="text-xs text-slate-500">Latency</div><div id="telemetryLatency" class="font-bold text-lg">—</div></div><div class="rounded-xl bg-slate-50 p-3"><div class="text-xs text-slate-500">Est. token cost</div><div id="telemetryCost" class="font-bold text-lg">—</div></div></div><p class="text-[11px] text-slate-400 mt-3">Token cost is a rough demo estimate based on character count, not provider billing data. Latency is measured client-side.</p></div>
+    <div class="mt-6 rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-900 leading-relaxed"><strong>Production caveat:</strong> Prompt instructions are not a security boundary. Keep deterministic input/output policy checks, reviewed retrieval, monitoring and compliance review in the backend before launch.</div>
+  </aside>
+  <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[80] hidden rounded-xl bg-navy text-white px-4 py-3 text-sm shadow-xl" role="status"></div>
+  <script src="./app.js"></script>
+</body>
+</html>

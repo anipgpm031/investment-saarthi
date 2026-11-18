@@ -1,0 +1,156 @@
+INVESTMENT SAARTHI — DEPLOYMENT GUIDE
+=====================================
+
+This is a zero-build vanilla JavaScript prototype with a Netlify serverless
+function. The Gemini API key is read only by the server-side function.
+
+1. WHAT YOU NEED
+---------------
+- A Google AI Studio Gemini API key.
+- A GitHub account.
+- A Netlify account.
+- Node.js 18 or newer (for local testing).
+- Git (optional but recommended).
+
+2. PROJECT FILES
+----------------
+Keep this structure exactly:
+
+investment-saarthi/
+  index.html
+  app.js
+  netlify.toml
+  package.json
+  netlify/
+    functions/
+      gemini.js
+
+3. ADD THE API KEY SAFELY
+-------------------------
+Do NOT paste your Gemini API key into index.html, app.js, GitHub, or any
+client-side JavaScript.
+
+In Netlify:
+1. Open your site in the Netlify dashboard.
+2. Go to Site configuration (or Project configuration) > Environment variables.
+3. Add a variable:
+      Key:   GEMINI_API_KEY
+      Value: your Google AI Studio API key
+4. Make it available to the Functions runtime / all deploy contexts.
+5. Save the variable and trigger a fresh deploy.
+
+The function calls the Gemini 2.5 Flash REST endpoint. If the key is missing,
+the app will return a safe configuration error rather than exposing a key.
+
+4. DEPLOY WITH GITHUB (RECOMMENDED)
+-----------------------------------
+1. Unzip the supplied Investment_Saarthi project.
+2. Create a new GitHub repository, for example: investment-saarthi.
+3. Upload the contents of the project folder (not an extra nested folder).
+4. In Netlify choose "Add new site" > "Import an existing project".
+5. Connect GitHub and select the repository.
+6. Build settings:
+      Build command: (leave blank)
+      Publish directory: .
+      Functions directory: netlify/functions
+   netlify.toml already declares these settings.
+7. Deploy the site.
+8. Add GEMINI_API_KEY under Netlify environment variables as described above.
+9. Trigger a fresh deploy after adding the key.
+
+5. DEPLOY WITH NETLIFY CLI (LOCAL)
+----------------------------------
+Open a terminal in the project folder and run:
+
+    npm install
+    npx netlify login
+    npx netlify init
+    npx netlify env:set GEMINI_API_KEY "YOUR_REAL_KEY"
+    npx netlify dev
+
+Netlify Dev should provide a local URL, commonly http://localhost:8888.
+Open it in your browser. Do not use a plain static file server because the
+/api/gemini serverless route will not exist there.
+
+To deploy after linking the site:
+
+    npx netlify deploy
+    npx netlify deploy --prod
+
+If you prefer not to put the key in shell history, set it through the Netlify
+dashboard instead of the env:set command.
+
+6. TEST THE APPLICATION
+-----------------------
+- Open Saarthi Chat. Consent must be checked before profiling begins.
+- Complete or skip the profiling questions. Check that the risk level is
+  calculated even if Gemini is unavailable.
+- Edit, export and delete the profile.
+- Open Jargon Buster and ask:
+    "What is an expense ratio?"
+    "Explain SIP like I'm 15."
+    "Which stock will double next month?"
+  The stock-tip test should be blocked by the deterministic server-side
+  guardrail before the Gemini model is called.
+- Open Goal Simulator. Change SIP amount, horizon and return assumption.
+  The invested and estimated values should update immediately.
+- Open PM Guardrails & Eval Mode to inspect the latest request telemetry.
+
+7. IMPORTANT PRODUCT / COMPLIANCE NOTES
+---------------------------------------
+This is a capstone demonstration prototype, not a production investment
+advice product. The supplied PRD calls for:
+- Explicit consent before profiling.
+- One profiling question at a time, with skip support.
+- An editable profile summary and profile export/delete controls.
+- Deterministic suitability logic and deterministic scenario mathematics.
+- Reviewed, dated source retrieval, citations or explicit source-gap messages.
+- No buy/sell/hold instructions or guaranteed returns.
+- User feedback, privacy controls, auditability and compliance review.
+
+This prototype implements the main interaction patterns and basic server-side
+guardrails, but it does NOT implement a live RAG pipeline, a reviewed source
+repository, formal SEBI/legal compliance, authentication, encrypted profile
+storage, production audit logging, user feedback persistence, data retention
+policies, or regulatory approvals. Its source references are explicitly
+labelled as demo references and must not be represented as live verified
+citations. The UI's "active" guardrail indicators describe prototype checks,
+not a certification.
+
+Before any public or real-money use:
+- Have Indian financial-services counsel/compliance specialists review the
+  product boundary, disclosures, data handling and any distribution model.
+- Build a reviewed and dated source repository with source owners, refresh
+  cadence and expiry rules. Cite exact documents and passages retrieved.
+- Add retrieval-grounding checks and a reliable fail-closed policy.
+- Test the deterministic risk rules with documented methodology and cases;
+  have a qualified reviewer approve them.
+- Add server-side rate limiting, abuse controls, request-size limits, logging
+  with privacy protections, monitoring and alerting.
+- Add authentication and appropriate data-protection controls if profiles
+  are persisted.
+- Disclose any commercial relationships, commissions or conflicts clearly.
+- Validate the Gemini model/API version, current pricing, quotas and terms.
+
+8. TROUBLESHOOTING
+------------------
+"AI service is not configured":
+- Confirm GEMINI_API_KEY is set in Netlify environment variables.
+- Trigger a new deployment after setting it.
+
+"AI service could not complete this request":
+- Check the Netlify Function logs.
+- Confirm the API key is valid, has API access and has not exceeded quota.
+- Check current Google AI Studio model availability and account restrictions.
+
+The page loads but AI does not work locally:
+- Start the app with `npx netlify dev`, not by double-clicking index.html.
+- Confirm the Netlify CLI is installed and the function path is correct.
+
+9. FILES AND EXTERNAL CDN DEPENDENCIES
+--------------------------------------
+Tailwind CSS, Lucide icons, Chart.js and Google Fonts are loaded from public
+CDNs. An internet connection is required for those assets. For a hardened
+production deployment, pin versions and consider self-hosting/building assets.
+
+END

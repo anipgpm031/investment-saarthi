@@ -1,0 +1,16 @@
+{
+  "name": "investment-saarthi",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Educational AI investment companion prototype for India",
+  "scripts": {
+    "dev": "netlify dev",
+    "start": "netlify dev"
+  },
+  "devDependencies": {
+    "netlify-cli": "^23.0.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
