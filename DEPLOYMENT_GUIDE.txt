@@ -154,3 +154,7 @@ CDNs. An internet connection is required for those assets. For a hardened
 production deployment, pin versions and consider self-hosting/building assets.
 
 END
+
+
+UPDATE — GOLDEN DATASET SOURCE MAPPING & RESPONSE FORMATTING
+This project version maps Ask Saarthi questions to Golden Dataset v2 source labels and relevant public SEBI/AMFI learning links. It returns sourceReferences to the frontend. AI answers are displayed in readable section cards with headings, paragraphs and bullets rather than raw Markdown. See SOURCE_MAPPING_README.md for source-integrity notes.

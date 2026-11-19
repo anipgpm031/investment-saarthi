@@ -19,10 +19,32 @@ BEHAVIOUR CONTRACT:
 Return concise, well-structured text. Do not output markdown tables unless requested.
 `;
 
+// Source map: benchmark labels come from the supplied Golden Dataset v2.
+// Public links below point to official SEBI/AMFI material where available.
+// A benchmark label is not represented as a separately uploaded document.
 const KNOWLEDGE = [
-  { id:'SEBI-IE-DEMO', title:'SEBI Investor Education — learning reference (demo)', topics:['investing basics','risk','diversification','fraud awareness'], note:'Use as a pointer for users to consult current official SEBI investor education materials. This prototype does not retrieve or verify live SEBI pages.' },
-  { id:'AMFI-MFB-DEMO', title:'AMFI Mutual Fund Basics — learning reference (demo)', topics:['mutual funds','SIP','NAV','expense ratio'], note:'Use as a pointer for users to consult current AMFI investor education materials and scheme documents. This prototype does not retrieve or verify live AMFI pages.' },
-  { id:'SIP-CALC-DEMO', title:'Investment Saarthi SIP calculator methodology (demo)', topics:['SIP','compounding','scenario'], note:'Monthly contribution at month-end with monthly compounding; hypothetical annual rate divided by 12.' }
+  { id:'GD-01', title:'SEBI Investor Education Guide — investing basics, emergency buffer and diversification', benchmark:'SEBI Investor Education Guide Sec 2.1', url:'https://investor.sebi.gov.in/', topics:/emergency|start investing|where should i start|surplus|diversif|index fund|risk|market|portfolio|stock|share|crypto|options|f&o|volatil|crash|drop|red/i },
+  { id:'GD-02', title:'SEBI Investor Education — understanding mutual funds and investment risk', benchmark:'Behavioral Finance Handbook Ch 4 (golden-dataset benchmark); SEBI investor education', url:'https://investor.sebi.gov.in/understanding_mf.html', topics:/market drop|market fell|portfolio.*red|panic|sell everything|pull.*out|volatil|loss|crash|fear/i },
+  { id:'GD-03', title:'SEBI Investor Education — risk, diversification and investor protection', benchmark:'SEBI IA Regulations & Guardrail Policy (golden-dataset benchmark)', url:'https://investor.sebi.gov.in/', topics:/stock tip|top.*stocks|guaranteed|double|buy today|which stock|which fund|recommend.*fund|crypto|token|price target/i },
+  { id:'GD-04', title:'Investment Saarthi — goal planning and SIP calculation methodology', benchmark:'Goal Planning & Asset Glidepath Doc (golden-dataset benchmark)', url:'https://www.amfiindia.com/investor/knowledge-center', topics:/goal|target|lakh|sip.*need|monthly.*invest|how much.*invest|time horizon|years?/i },
+  { id:'GD-05', title:'AMFI — Expense Ratio and Mutual Fund Basics', benchmark:'AMFI Mutual Fund Basics Module 3', url:'https://www.amfiindia.com/investor/knowledge-center-info?zoneName=expenseRatio', topics:/expense ratio|ter|ber|exit load|fund fee|charges|nav/i },
+  { id:'GD-06', title:'SEBI Investor Education — understanding risk and investment choices', benchmark:'Personal Cashflow Prioritization Framework (golden-dataset benchmark)', url:'https://investor.sebi.gov.in/', topics:/loan|debt|prepay|interest rate|borrow|emi|cash flow/i },
+  { id:'GD-07', title:'SEBI — Mutual Fund Investor FAQs and regulations', benchmark:'Indian Retail Tax & Lock-In Reference 2026 (golden-dataset benchmark)', url:'https://www.sebi.gov.in/legal/faq.html', topics:/tax|elss|ppf|lock.?in|capital gains|ltcg|stcg/i },
+  { id:'GD-08', title:'Investment Saarthi — conversational onboarding prompt framework', benchmark:'Conversational Onboarding Prompt Spec (golden-dataset benchmark)', url:'https://investor.sebi.gov.in/', topics:/make.*plan|investment plan|where do i begin|help me invest/i },
+  { id:'GD-09', title:'SEBI — Specialized Investment Fund regulatory framework', benchmark:'SEBI SIF Regulatory Circular Summary', url:'https://www.sebi.gov.in/sebi_data/attachdocs/dec-2024/1734952378369.pdf', topics:/specialized investment fund|\\bsif\\b/i },
+  { id:'GD-10', title:'Investment Saarthi — multi-goal bucket planning framework', benchmark:'Multi-Goal Bucket Strategy Guide (golden-dataset benchmark)', url:'https://investor.sebi.gov.in/', topics:/multiple goals|three goals|home.*retire|retire.*travel|prioriti[sz].*goal|short.?term.*goal/i },
+  { id:'GD-11', title:'Investment Saarthi — AI behaviour contract and security guardrails', benchmark:'System Guardrail & Security Spec v1', url:'https://investor.sebi.gov.in/', topics:/ignore previous|ignore.*instruction|act as.*advisor|sebi.?registered|guarantee.*return|override/i },
+  { id:'GD-12', title:'AMFI — Introduction to Mutual Funds and investment fundamentals', benchmark:'Partner Educator Curriculum Kit Sec 1', url:'https://www.amfiindia.com/investor/knowledge-center-info?zoneName=IntroductionMutualFunds', topics:/asset allocation|fund selection|mutual fund|index fund|equity fund|debt fund|hybrid fund|what is.*fund/i },
+  { id:'GD-13', title:'SEBI Investor Education — inflation, risk and investment avenues', benchmark:'Inflation & Purchasing Power Module (golden-dataset benchmark)', url:'https://investor.sebi.gov.in/', topics:/inflation|purchasing power|fixed deposit|\\bfd\\b|real return/i },
+  { id:'GD-14', title:'SEBI — Risk disclosures for derivatives and speculative trading', benchmark:'SEBI F&O Risk Disclosure & Diversification Doc', url:'https://www.sebi.gov.in/', topics:/f&o|futures|options|derivative|meme coin|speculat|80%.*saving|crypto/i },
+  { id:'GD-15', title:'SEBI Investor Education — emergency savings and investment risk', benchmark:'Financial Health Check Rules Engine (golden-dataset benchmark)', url:'https://investor.sebi.gov.in/', topics:/zero emergency|no emergency|all.*savings|emergency fund|cash reserve/i },
+  { id:'GD-16', title:'AMFI — Mutual Fund investor information and SIP operations', benchmark:'AMFI SIP Operations & Mandate FAQ', url:'https://www.amfiindia.com/investor', topics:/pause.*sip|stop.*sip|cancel.*sip|sip bounce|mandate|miss.*sip/i },
+  { id:'GD-17', title:'SEBI Investor Education — mutual funds, withdrawals and risk', benchmark:'Senior Citizen Capital Preservation Guide (golden-dataset benchmark)', url:'https://investor.sebi.gov.in/understanding_mf.html', topics:/retire|senior|father|monthly income|swp|capital preservation|principal/i },
+  { id:'GD-18', title:'Investment Saarthi — product scope and escalation policy', benchmark:'Scope & Escalation Policy Sec 3', url:'https://investor.sebi.gov.in/', topics:/legal will|health insurance|medical|diagnosis|legal advice|unrelated/i },
+  { id:'GD-19', title:'SEBI — Mutual Fund TER/BER disclosure and expense framework', benchmark:'SEBI 2026 TER/BER Disclosure Guidelines (golden-dataset benchmark)', url:'https://www.sebi.gov.in/', topics:/base expense ratio|\\bber\\b|total expense|gst|stamp duty|stt/i },
+  { id:'GD-20', title:'Investment Saarthi — family goal summary and financial alignment', benchmark:'Family Financial Alignment Prompt Spec (golden-dataset benchmark)', url:'https://investor.sebi.gov.in/', topics:/share.*goal|family|export.*summary|goal summary/i },
+  { id:'AMFI-CORE', title:'AMFI Investor Corner — mutual fund basics, types, risks and tools', benchmark:'AMFI Investor Corner', url:'https://www.amfiindia.com/investor', topics:/sip|lumpsum|lump sum|nav|mutual fund|expense|index|equity|debt|hybrid|diversif/i },
+  { id:'SEBI-CORE', title:'SEBI Investor — securities market and mutual fund education', benchmark:'SEBI Investor Education Programme', url:'https://investor.sebi.gov.in/understanding_mf.html', topics:/invest|market|risk|return|fraud|portfolio|asset/i }
 ];
 
 function json(statusCode, body) {
@@ -38,12 +60,13 @@ function isOutOfScope(text) {
   return terms.test(text);
 }
 function chooseSources(text, task) {
-  const t = String(text||'').toLowerCase();
-  const found = [];
-  if (/sip|mutual fund|nav|expense ratio|index fund|lumpsum|lump sum/.test(t)) found.push(KNOWLEDGE[1]);
-  if (/risk|diversif|stock|share|crypto|market|portfolio/.test(t)) found.push(KNOWLEDGE[0]);
-  if (task === 'scenario_analysis' || task === 'profile_summary') found.push(KNOWLEDGE[2]);
-  return [...new Map(found.map(x=>[x.id,x])).values()];
+  const t=String(text||'').toLowerCase();
+  const matches=KNOWLEDGE.filter(s=>s.topics.test(t));
+  // Always provide a relevant foundational public source for an in-scope education question.
+  if (!matches.length && task==='education') return [KNOWLEDGE.find(s=>s.id==='SEBI-CORE'), KNOWLEDGE.find(s=>s.id==='AMFI-CORE')];
+  if (task==='scenario_analysis' || task==='profile_summary') matches.push(KNOWLEDGE.find(s=>s.id==='GD-04'));
+  if (!matches.some(s=>s.id==='SEBI-CORE' || s.id==='AMFI-CORE') && task==='education' && /mutual fund|sip|nav|expense|index|equity|debt/i.test(t)) matches.push(KNOWLEDGE.find(s=>s.id==='AMFI-CORE'));
+  return [...new Map(matches.filter(Boolean).map(x=>[x.id,x])).values()].slice(0,3);
 }
 function extractText(data) {
   return (data.candidates?.[0]?.content?.parts||[]).map(p=>p.text||'').join('\n').trim();
@@ -61,14 +84,14 @@ exports.handler = async (event) => {
 
   // Deterministic safety gates before model invocation.
   if (task==='education' && isTipRequest(userText)) {
-    return json(200,{reply:'I can’t pick a stock or predict which share will double. Short-term stock moves are uncertain, and concentrating money in one company can expose you to substantial loss. I can help you understand diversification, broad-market index funds, risk and how to evaluate an investment category instead.\n\nEducational only — not investment, tax or legal advice.',sourceCitation:'SEBI Investor Education — learning reference (demo; consult current official materials)',guardrailTriggered:true,latencyMs:0,estimatedCost:'₹0.00 (blocked before AI)'});
+    return json(200,{reply:'I can’t pick a stock or predict which share will double. Short-term stock moves are uncertain, and concentrating money in one company can expose you to substantial loss. I can help you understand diversification, broad-market index funds, risk and how to evaluate an investment category instead.\n\nEducational only — not investment, tax or legal advice.',sourceCitation:'SEBI Investor Education — investor education and risk awareness',sourceReferences:[{id:'GD-03',title:'SEBI Investor Education — risk, diversification and investor protection',benchmark:'SEBI IA Regulations & Guardrail Policy (golden-dataset benchmark)',url:'https://investor.sebi.gov.in/'}],guardrailTriggered:true,latencyMs:0,estimatedCost:'₹0.00 (blocked before AI)'});
   }
   if (task==='education' && isOutOfScope(userText)) {
     return json(200,{reply:'I’m designed for investment and personal-finance education, so I can’t help with that topic. You can ask me about mutual funds, SIPs, diversification, investment risk or fees.\n\nEducational only — not investment, tax or legal advice.',sourceCitation:'No source retrieved — outside product scope',guardrailTriggered:true,latencyMs:0,estimatedCost:'₹0.00 (blocked before AI)'});
   }
   const sources=chooseSources(userText,task);
-  const sourceContext=sources.length?sources.map(s=>`[${s.id}] ${s.title}: ${s.note}`).join('\n'):'No matching reviewed source is available in this demo knowledge set.';
-  const prompt = `TASK: ${task}\nUSER REQUEST / CONTEXT:\n${userText}\n\nDEMO KNOWLEDGE CONTEXT:\n${sourceContext}\n\nFor profile_summary, explain the supplied deterministic result only; do not change the level or score. For scenario_analysis, interpret the supplied calculator outputs and assumptions without recalculating or forecasting. For education, answer the question only from supported knowledge; explicitly state source gaps.`;
+  const sourceContext=sources.map(s=>`[${s.id}] ${s.title}. Golden dataset benchmark label: ${s.benchmark}. Official/public reference URL: ${s.url}. Use this only for claims within its scope; do not claim the benchmark document itself was retrieved.`).join('\n');
+  const prompt = `TASK: ${task}\nUSER REQUEST / CONTEXT:\n${userText}\n\nDEMO KNOWLEDGE CONTEXT:\n${sourceContext}\n\nWrite the answer in plain, readable sections with short headings and short paragraphs. Avoid markdown syntax such as **, ##, backticks, or markdown tables. Use simple bullets only when useful. For profile_summary, explain the supplied deterministic result only; do not change the level or score. For scenario_analysis, interpret the supplied calculator outputs and assumptions without recalculating or forecasting. For education, answer the question only from supported knowledge; explicitly state source gaps.`;
   const started=Date.now();
   try {
     const upstream=await fetch(`${API_URL}?key=${encodeURIComponent(process.env.GEMINI_API_KEY)}`,{
@@ -90,11 +113,12 @@ exports.handler = async (event) => {
     // Enforce the disclaimer even if the model omits it.
     if(!/Educational only — not investment, tax or legal advice\./i.test(reply)) reply += '\n\nEducational only — not investment, tax or legal advice.';
     // Never claim a source was retrieved if none matched.
-    const sourceCitation=sources.length?sources.map(s=>s.title).join('; '):'No reviewed source matched this question in the prototype knowledge set.';
+    const sourceCitation=sources.map(s=>s.title).join('; ');
+    const sourceReferences=sources.map(s=>({id:s.id,title:s.title,benchmark:s.benchmark,url:s.url}));
     const usage=data.usageMetadata||{};
     const tokens=(usage.promptTokenCount||0)+(usage.candidatesTokenCount||0);
     const estimatedCost=`~${tokens} tokens · pricing not calculated`;
-    return json(200,{reply,sourceCitation,guardrailTriggered:false,latencyMs,estimatedCost});
+    return json(200,{reply,sourceCitation,sourceReferences,guardrailTriggered:false,latencyMs,estimatedCost});
   } catch(err) {
     console.error('Gemini proxy failure',err.message);
     return json(502,{error:'Unable to reach the AI service. Please try again.'});

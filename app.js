@@ -133,9 +133,66 @@
   function deleteProfile() {
     state.answers={};state.profile=null;state.step=0;$('profileResult').classList.add('hidden');$('chatScreen').classList.add('hidden');$('consentScreen').classList.remove('hidden');$('consentCheck').checked=false;$('startProfile').disabled=true;$('chatMessages').innerHTML='';toast('Profile cleared from this browser session.');
   }
+  function formatAnswerSections(raw) {
+    const safe = escapeHTML(String(raw || '').replace(/\r/g, ''));
+    const lines = safe.split('\n');
+    const sections = [];
+    let current = { title: 'Saarthi explains', lines: [] };
+    const flush = () => {
+      if (current.lines.length || current.title !== 'Saarthi explains') sections.push(current);
+      current = { title: '', lines: [] };
+    };
+    for (const line of lines) {
+      const trimmed = line.trim();
+      if (!trimmed) { current.lines.push(''); continue; }
+      const heading = trimmed.match(/^#{1,3}\s+(.+?)\s*#*$/) ||
+        trimmed.match(/^\*\*(.{2,90})\*\*:?$/) ||
+        trimmed.match(/^\d+[.)]\s+\*\*(.{2,90})\*\*:?$/);
+      if (heading) {
+        flush();
+        current = { title: heading[1].replace(/\*\*/g, ''), lines: [] };
+        continue;
+      }
+      current.lines.push(trimmed);
+    }
+    flush();
+    if (!sections.length) sections.push({title:'Saarthi explains',lines:[safe]});
+    return sections.map(section => {
+      const body = [];
+      let list = [];
+      const closeList = () => { if (list.length) { body.push(`<ul class="list-disc pl-5 space-y-1.5 my-2">${list.map(x=>`<li>${inlineFormat(x)}</li>`).join('')}</ul>`); list=[]; } };
+      for (const line of section.lines) {
+        if (!line) { closeList(); continue; }
+        const bullet = line.match(/^(?:[-*•]|\d+[.)])\s+(.+)$/);
+        if (bullet) list.push(bullet[1]);
+        else { closeList(); body.push(`<p class="my-2">${inlineFormat(line)}</p>`); }
+      }
+      closeList();
+      return `<section class="rounded-xl border border-slate-200 bg-white p-4 mb-3">
+        <h3 class="font-bold text-slate-900 mb-2">${inlineFormat(section.title || 'Key point')}</h3>
+        <div class="text-sm text-slate-700 leading-7">${body.join('')}</div>
+      </section>`;
+    }).join('');
+  }
+  function inlineFormat(text) {
+    return String(text)
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*(.+?)\*/g, '<em>$1</em>')
+      .replace(/`([^`]+)`/g, '<code class="rounded bg-slate-100 px-1 py-0.5">$1</code>');
+  }
   function renderLearnReply(data, fallback=false) {
-    const citation=data.sourceCitation||'No reviewed source was retrieved for this answer.';
-    const html=`<div>${escapeHTML(data.reply||'I could not prepare an answer right now.')}</div><div class="mt-3 pt-3 border-t border-slate-200 text-xs text-slate-500"><span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-800 px-2 py-1 font-semibold mb-2"><i data-lucide="badge-check" class="w-3 h-3"></i> Knowledge reference · demo</span><div><strong>Reference:</strong> ${escapeHTML(citation)}</div><div class="mt-2">Educational only — not investment, tax or legal advice. Verify current scheme documents and official disclosures before acting.</div></div>`;
+    const refs = Array.isArray(data.sourceReferences) ? data.sourceReferences : [];
+    const referenceHtml = refs.length ? refs.map(ref => `
+      <a href="${escapeHTML(ref.url)}" target="_blank" rel="noopener noreferrer" class="block rounded-xl border border-emerald-100 bg-emerald-50/70 p-3 hover:bg-emerald-50">
+        <span class="block text-xs font-semibold text-emerald-900">${escapeHTML(ref.title)}</span>
+        <span class="block text-[11px] text-slate-500 mt-1">Golden dataset mapping: ${escapeHTML(ref.benchmark || ref.id)} · Open official reference ↗</span>
+      </a>`).join('') : `<div class="text-xs text-slate-600">General educational reference: <a class="text-emerald-700 underline" href="https://investor.sebi.gov.in/" target="_blank" rel="noopener noreferrer">SEBI Investor Education</a> · <a class="text-emerald-700 underline" href="https://www.amfiindia.com/investor" target="_blank" rel="noopener noreferrer">AMFI Investor Corner</a></div>`;
+    const html=`<div class="space-y-1">${formatAnswerSections(data.reply||'I could not prepare an answer right now.')}</div>
+      <div class="mt-4 pt-3 border-t border-slate-200 space-y-2">
+        <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-800 px-2 py-1 text-[11px] font-semibold"><i data-lucide="badge-check" class="w-3 h-3"></i> Learning references</span>
+        ${referenceHtml}
+        <div class="text-[11px] text-slate-500 leading-relaxed">Educational only — not investment, tax or legal advice. Check the latest official rules and scheme documents before acting.</div>
+      </div>`;
     addMessage($('learnMessages'),html,'bot',true); if(window.lucide)lucide.createIcons();
   }
   async function askLearn(question) {
